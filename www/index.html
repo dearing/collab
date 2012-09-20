@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>collab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/codemirror.css">
+	<link rel="stylesheet" href="css/codemirror-themes.css">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="shortcut icon" href="img/favicon.png">
+  </head>
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+<body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">collab</a>
+          <div class="btn-group pull-right">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#" id='profile-name'><i class="icon-user"></i> Username <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a data-toggle="modal" href="#settings">Settings</a></li>
+              <li class="divider"></li>
+			  <li><a id='ux-reconnect' href="#">Reconnect</a></li>
+              <li><a id='ux-disconnect' href="#">Disconnect</a></li>
+            </ul>
+          </div>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a data-toggle="modal" href="#about">About</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+		<ul class="nav nav-pills">
+			<li class="dropdown" id="menu1">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#menu1"> Chat Options <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a id='ux-chat-clear' href="#">Clear</a></li>
+					</ul>
+				</li>
+			<li class="dropdown" id="menu2">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#menu2"> Editor Options <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a id='ux-editor-clear' href="#">Clear</a></li>
+					<li><a id='ux-editor-sync' href="#">Send Sync Request</a></li>
+					</ul>
+				</li>
+
+			</ul>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+			<div id='chat'></div>
+				<input class="span12" id="chat-message" size="16" type="text" placeholder='message'>
+        </div><!--/span-->
+        <div class="span9">
+			<div id='editor'></div>
+        </div><!--/span-->
+      </div><!--/row-->
+    </div><!--/.fluid-container-->
+	<div class="modal hide" id="settings">
+		<div class="modal-header"><button type="button" class="close" data-dismiss="modal">x</button><h3>locally stored settings</h3></div>
+		<div class="modal-body">
+			<p>Uses HTMl5 <a href='http://www.html5rocks.com/en/features/storage'>Storage</a> technology to store and retreive settings on this client.</p>
+			<hr />
+			<label class='textbox'><input type="text" id='settings-username' class='span4' placeholder='spanky'> user's name</label>
+			<fieldset>
+			<label class='checkbox'><input type='checkbox' id='settings-lineWrapping'>enable line wrapping</input></label>
+			<label class='checkbox'><input type='checkbox' id='settings-lineNumbers'>show line numbers in the editor</input></label>
+			<label class='checkbox'><input type='checkbox' id='settings-gutter'>show gutter in the editor</input></label>
+			<label class='checkbox'><input type='checkbox' id='settings-indentWithTabs'>indent with tabs instead of spaces</input></label>
+			<label class='select'><select id='settings-tabSize'><option>2</option><option selected>4</option><option>8</option></select> Tab Size</label>
+			<label class='select'>
+				<select id='settings-mode'>
+					<option>clike</option>
+					<option>clojure</option>
+					<option>coffeescript</option>
+					<option>css</option>
+					<option>diff</option>
+					<option>ecl</option>
+					<option>erlang</option>
+					<option>gfm</option>
+					<option>go</option>
+					<option>groovy</option>
+					<option>haskell</option>
+					<option>htmlembedded</option>
+					<option>htmlmixed</option>
+					<option>javascript</option>
+					<option>jinja2</option>
+					<option>less</option>
+					<option>lua</option>
+					<option>markdown</option>
+					<option>mysql</option>
+					<option>ntriples</option>
+					<option>pascal</option>
+					<option>perl</option>
+					<option>php</option>
+					<option>pig</option>
+					<option>plsql</option>
+					<option>properties</option>
+					<option selected>python</option>
+					<option>r</option>
+					<option>rpm</option>
+					<option>rst</option>
+					<option>ruby</option>
+					<option>rust</option>
+					<option>scheme</option>
+					<option>shell</option>
+					<option>smalltalk</option>
+					<option>smarty</option>
+					<option>sparql</option>
+					<option>stex</option>
+					<option>tiddlywiki</option>
+					<option>tiki</option>
+					<option>vbscript</option>
+					<option>velocity</option>
+					<option>verilog</option>
+					<option>xml</option>
+					<option>xquery</option>
+					<option>yaml</option>
+					</select>
+				Editor Mode</label>
+			<label class='select'>
+				<select id='settings-theme'>
+					<option>default</option>
+					<option>ambiance</option>
+					<option>blackboard</option>
+					<option selected>cobalt</option>
+					<option>eclipse</option>
+					<option>elegant</option>
+					<option>erlang-dark</option>
+					<option>lesser-dark</option>
+					<option>monokai</option>
+					<option>neat</option>
+					<option>night</option>
+					<option>rubyblue</option>
+					<option>vibrant-ink</option>
+					<option>xq-dark</option>
+				</select>
+				 Editor Theme</label>
+			</fieldset>
+			</div>
+		<div class="modal-footer"><a id='settings-save' href="#" class="btn btn-primary">Save</a><a href="#" class="btn" data-dismiss="modal">Close</a></div>
+	</div>
+	<div class="modal hide" id="about">
+		<div class="modal-header"><button type="button" class="close" data-dismiss="modal">x</button><h3>collab - a live editor</h3></div>
+		<div class="modal-body">	
+			<p>The server is written in <a href='http://golang.org/'>Go</a> using channels to route <a href='http://www.json.org/'>JSON</a> data over a <a href='http://www.html5rocks.com/en/tutorials/websockets/basics/'>websocket</a> while also handling basic HTTP/HTTPS services in order to keep this whole project semi-mobile (and incidently, cross platform as go compiles nice static binaries).  The clients themselves connect to the websocket and fetch a copy of the working document from the eldest connected client.  From then any changes to the document are passed back to the server as they happen where it is broadcasted out.  The client itself uses <a href='http://www.html5rocks.com/en/features/storage'>storage</a> local to the client's browser to persist settings across views.</p>
+			<p><a href='http://codemirror.net/'>Marijnh's Codemirror</a> is so powerful and useful that it really made this whole thing worth the effort and <a href='http://twitter.github.com/bootstrap/index.html'>Twitter's Bootstrap</a> kept me sane by providing a basic UX system so I wouldn't have to.  Without these two projects I wouldn't have even bothered with a web solution and so I am grateful.</p>
+			<hr />
+			<a href="http://www.w3.org/html/logo/"><img src="http://www.w3.org/html/logo/badge/html5-badge-h-connectivity-css3-semantics-storage.png" width="229" height="64" alt="HTML5 Powered with Connectivity / Realtime, CSS3 / Styling, Semantics, and Offline &amp; Storage" title="HTML5 Powered with Connectivity / Realtime, CSS3 / Styling, Semantics, and Offline &amp; Storage"></a>
+			</div>
+		<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Close</a></div>
+	</div>
+
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<script src="js/codemirror.js"></script>
+    <script src="js/core.js"></script>
+</body>
+</html>

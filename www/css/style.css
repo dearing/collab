@@ -1,0 +1,16 @@
+
+#editor
+{
+	border: 1px solid #ccc
+}
+
+#chat
+{
+
+	background-color:#000;
+
+	color:#ccc;
+	padding:2px;
+	height:666px;
+	overflow:auto;
+}
