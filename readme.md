@@ -30,7 +30,7 @@ Usage of collab:
   -cert="": tls certificate
   -host=":8080": host to bind to
   -key="": tls certificate key
-  -root="www/": webserver document root fold
+  -root="www/": webserver document root folder
   -tls=false: enable TLS
   -www=true: enable local webserver
 
