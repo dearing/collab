@@ -1,6 +1,7 @@
 :: BATCH script to compile various binaries and package them with the web documents
 :: Why not use a scripting language? I don't fucking know why I did this to myself.
 @ECHO off
+CD ..
 SET CGO_ENABLED=0
 FOR %%O in (darwin linux windows freebsd netbsd openbsd) do (
 	SET GOOS=%%O
