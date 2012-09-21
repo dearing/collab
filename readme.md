@@ -21,10 +21,12 @@ stitched it all together.
 
 ## how to build ##
 - [install go](http://golang.org/doc/install)
+- fetch the source
 - install websocket package
 - build it
 
 ```
+git clone https://github.com/dearing/collab.git
 go get code.google.com/p/go.net/websocket
 go build
 
