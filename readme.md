@@ -16,7 +16,7 @@ stitched it all together.
 - Requires friends to use.
 - Visit the [download](https://github.com/dearing/collab/downloads) section for a pre-built windows package
 
-![nothing fancy](https://raw.github.com/dearing/collab/master/www/img/ss.jpg)
+![nothing fancy](https://raw.github.com/dearing/collab/master/www/img/collab.png)
 
 
 ## how to build ##
