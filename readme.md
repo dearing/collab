@@ -14,7 +14,7 @@ This is not hardened software, do not expect support outside of development.
 
 Requires friends to use.
 
-visit the [download](https://github.com/dearing/collab/downloads) section for a windows package
+visit the [download](https://github.com/dearing/collab/downloads) section for a pre-built windows package
 
 
 ## how to build ##
