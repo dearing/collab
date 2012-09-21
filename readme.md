@@ -14,7 +14,7 @@ stitched it all together.
 - For convenience, a built in webserver can handle the support files (SSL support off by default).
 - This is not hardened software, do not expect support outside of development.
 - Requires friends to use.
-- Visit the [download](https://github.com/dearing/collab/downloads) section for a pre-built windows package
+- Visit the [download](https://github.com/dearing/collab/downloads) section for a pre-built solutions
 
 ![nothing fancy](https://raw.github.com/dearing/collab/master/www/img/collab.png)
 
