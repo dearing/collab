@@ -27,11 +27,11 @@ stitched it all together.
 
 ```
 git clone https://github.com/dearing/collab.git
+cd collab
 go get code.google.com/p/go.net/websocket
 go build
 
 ./collab --help
-
 Usage of collab:
   -cert="": tls certificate
   -host=":8080": host to bind to
@@ -39,5 +39,4 @@ Usage of collab:
   -root="www/": webserver document root folder
   -tls=false: enable TLS
   -www=true: enable local webserver
-
 ```
