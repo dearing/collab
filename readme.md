@@ -16,6 +16,8 @@ Requires friends to use.
 
 visit the [download](https://github.com/dearing/collab/downloads) section for a pre-built windows package
 
+![nothing fancy](https://raw.github.com/dearing/collab/master/www/img/ss.jpg)
+
 
 ## how to build ##
 - [install go](http://golang.org/doc/install)
