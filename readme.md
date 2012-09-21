@@ -10,7 +10,7 @@ I need from time to time a live source collaboration tool and I wasn't satisfied
 Nothing much to this really, the real work was already done with CodeMirror and Bootstrap - I just came in and 
 stitched it all together.
 
-- In order to use this effectivly, you will need to run the binary on a visible network.
+- In order to use this effectively, you will need to run the binary on a visible network.
 - For convenience, a built in webserver can handle the support files (SSL support off by default).
 - This is not hardened software, do not expect support outside of development.
 - Requires friends to use.
