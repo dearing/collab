@@ -1,4 +1,13 @@
+# Script to setup cross compile tool chain for go for calling machine.
 
+# All that is built are tools to compile for other OS/ARCH combinations
+# from the calling machine.  From here the calling machine can cross
+# compile by setting the GOOS and GOACRCH environment variables before
+# building as seen in the runtime step.
+
+# CGO not implemented (need C cross compiling toolchain on host)
+
+# Jacob Dearing 2012
 
 ENV["CGO_ENABLED"] = "0"
 
