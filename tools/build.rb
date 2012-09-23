@@ -1,8 +1,9 @@
 
-Dir.chdir("..")
+Dir.chdir '..'
 
 systems = ['windows','linux', 'netbsd','freebsd','openbsd','darwin']
 archs 	= ['386','amd64','arm']
+
 ENV["CGO_ENABLED"] = "0"
 
 def build(template)
