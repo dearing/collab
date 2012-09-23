@@ -11,15 +11,15 @@
 
 ENV["CGO_ENABLED"] = "0"
 
-Dir.chdir ENV["GOROOT"]
+Dir.chdir "#{ENV["GOROOT"]}/src" if Dir.exists? "#{ENV["GOROOT"]}/src"
 
 systems = ['windows','linux', 'netbsd','freebsd','openbsd','darwin']
 archs 	= ['386','amd64','arm']
 
 ['a','c','g','l'].each do |os|
 	['8','6','5'].each do |arch|
-		puts "tooling #{os}#{arch}..."
-		`go tool dist install -v cmd/#{os}#{arch}`
+#		puts "tooling #{os}#{arch}..."
+#		`go tool dist install -v cmd/#{os}#{arch}`
 	end
 end
 
@@ -27,8 +27,9 @@ systems.each do |os|
 	archs.each do |arch|
 		ENV['GOOS'] = os
 		ENV['GOARCH'] = arch
-		puts "building runtime for #{os}/#{arch}..."
-		`go tool dist install -v pkg/runtime`
-		`go install -v -a std`
+		`./make.bash --no-clean`
+#		puts "building runtime for #{os}/#{arch}..."
+#		`go tool dist install -v pkg/runtime`
+#		`go install -v -a std`
 	end
 end
