@@ -14,6 +14,8 @@ end
 
 systems.each do |os|
 	archs.each do |arch|
+		ENV['GOOS'] = os
+		ENV['GOARCH'] = arch
 		puts "building runtime for #{os}/#{arch}..."
 		`go tool dist install -v pkg/runtime`
 		`go install -v -a std`
