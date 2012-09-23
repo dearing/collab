@@ -11,6 +11,8 @@
 
 ENV["CGO_ENABLED"] = "0"
 
+Dir.chdir ENV["GOROOT"]
+
 systems = ['windows','linux', 'netbsd','freebsd','openbsd','darwin']
 archs 	= ['386','amd64','arm']
 
