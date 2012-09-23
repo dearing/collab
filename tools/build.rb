@@ -1,3 +1,4 @@
+# script to build and package collab for various systems and architectures
 
 Dir.chdir '..'
 

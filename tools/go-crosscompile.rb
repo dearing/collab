@@ -1,3 +1,5 @@
+# drop this in your path (like goroot's bin) and use it to cross compile
+# example: go-crosscompile "build -o myproject_arm.exe" windows arm
 
 systems = ['windows','linux', 'netbsd','freebsd','openbsd','darwin']
 archs 	= ['386','amd64','arm']
