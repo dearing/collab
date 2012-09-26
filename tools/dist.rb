@@ -3,7 +3,7 @@
 
 ENV["CGO_ENABLED"] = "0"
 
-if Dir.exists? "#{ENV["GOROOT"]}/src" ? Dir.chdir "#{ENV["GOROOT"]}/src" : exit
+ Dir.chdir "#{ENV["GOROOT"]}/src" if Dir.exists? "#{ENV["GOROOT"]}/src"
 
 systems = ['windows','linux', 'netbsd','freebsd','openbsd','darwin']
 archs 	= ['386','amd64','arm']
