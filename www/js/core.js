@@ -16,7 +16,7 @@
 
   store = localStorage;
 
-  server = "ws://" + window.location.host + "/collab";
+  server = "wss://" + window.location.host + "/collab";
 
   copen = new Audio("snd/c-open.ogg");
 
