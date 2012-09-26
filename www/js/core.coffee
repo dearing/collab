@@ -12,6 +12,7 @@ copen 	= new Audio "snd/c-open.ogg"
 cclose 	= new Audio "snd/c-close.ogg"
 ccall 	= new Audio "snd/c-call.ogg"
 
+lastChange = ""
 
 class LiveEditUser
 	save: ->
@@ -40,7 +41,7 @@ user.load()
 
 $('#settings').modal(show: true) if !user.name?
 
-user.name  	= prompt "no username in storage, please enter one now","spanky, destroyer of worlds" if !user.name?
+user.name  	= prompt "no username in storage, please enter one now","nobody" if !user.name?
 user.mode 	= "javascript" 	if !user.mode?
 user.theme 	= "cobalt" 		if !user.theme?
 user.save()
@@ -72,6 +73,7 @@ wsconnect = ->
 				codeEditor.setOption 'onChange', null
 				updateEditor x.Data
 				codeEditor.setOption 'onChange', handleEditorChange
+				lastChange = x.Data
 			when "fetch-editor" 
 				ws.send JSON.stringify {Action:"update-editor-full", Data: codeEditor.getValue(), Origin: x.Origin}
 			when "update-editor-full" 
@@ -80,10 +82,12 @@ wsconnect = ->
 				codeEditor.setOption 'onChange', handleEditorChange
 
 `function updateEditor(data) {
-	var x = JSON.parse(data);
-	codeEditor.replaceRange(x.text.join("\n"), x.from, x.to);
-	while(x.next === 'defined') {
-		UpdateEditor(x.next);
+	var payload = JSON.parse(data);
+	codeEditor.replaceRange(payload.text.join("\n"), payload.from, payload.to);
+
+	while('next' in payload) {
+		payload = payload.next
+		codeEditor.replaceRange(payload.text.join("\n"), payload.from, payload.to);
 	}
 }`
 wsdisconnect = ->
@@ -157,11 +161,12 @@ prepareSettingsModal()
 
 codeEditor = CodeMirror editor, 
 {
+	indentWithTabs 	: true,
 	theme			: user.theme, 
 	mode			: user.mode, 
 	gutter			: user.gutter, 
 	lineNumbers		: user.lineNumbers,
-	smartIndent 	: false,
+	#smartIndent 	: false,
 	tabSize			: user.tabSize,
 	indentWithTabs 	: user.indentWithTabs,
 	lineWrapping	: user.lineWrapping,
@@ -169,7 +174,7 @@ codeEditor = CodeMirror editor,
 }
 
 handleEditorChange = (o,u) ->
-	ws.send JSON.stringify({Action: 'update-editor', Data: JSON.stringify u })
+	ws.send JSON.stringify({Action: 'update-editor', Data: JSON.stringify u }) if lastChange != u
 
 wsconnect()
 
