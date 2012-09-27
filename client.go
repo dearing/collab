@@ -5,10 +5,12 @@ import (
 	. "fmt"
 )
 
+// Websocket client
 type Client struct {
-	Name   string
-	Socket *websocket.Conn
-	Lock   bool
+	ID     string          // generated unique id
+	Name   string          // a nickname
+	Lock   bool            // a lock to prevent the client from editing the active document
+	Socket *websocket.Conn // websocket for this client
 }
 
 // JSON format of a client intent, payload and origin
@@ -18,42 +20,42 @@ type ClientJSON struct {
 	Origin string // origin of intent
 }
 
-func (client *Client) mesg(action, data, origin string) *Message {
-	return &Message{Client: client, JSON: &ClientJSON{Action: action, Data: data, Origin: origin}}
-}
-
+// One can just us &ClientJSON directly but I find it all messy when stacked as I do later.
+// So this is just to clean it all up.
 func echo(action, data, origin string) *ClientJSON {
 	return &ClientJSON{Action: action, Data: data, Origin: origin}
 }
 
+// One can just us &Message directly but I find it all messy when stacked as I do later.
+// More so in this case as it is nested.
+func (client *Client) mesg(action, data, origin string) *Message {
+	return &Message{Client: client, JSON: &ClientJSON{Action: action, Data: data, Origin: origin}}
+}
+
+// At this point we have a goroutine handling this client who requested this websocket
+// The client is considered connected for the remainder of this routine, since this is
+// on a goroutine we do not need to fret about blocking.
 func WebsocketHandler(ws *websocket.Conn) {
 
-	client := &Client{
-		Name:   "Client",
-		Socket: ws,
-	}
-
-	// Here we wait for the client to provide us a nickname in Data
-	// so we can avoid throwing out generic usernames.  There is no
-	// other way for us to know how the client wants to be indentified
-	// without storing information at the server; which we do not want.
-
-	var q ClientJSON
-	if err := websocket.JSON.Receive(client.Socket, &q); err != nil {
-		return
-	}
-
-	client.Name = q.Data
+	client := &Client{ID: <-Router.GetID, Socket: ws}
 
 	Router.Add <- client
-	Router.Echo <- echo("inform", Sprintf("%s connected.", client.Name), "Server")
 
 	defer func() {
 		Router.Remove <- client
 		Router.Broadcast <- client.mesg("inform", Sprintf("%s disconnected.", client.Name), "Server")
 	}()
 
-	// gnab the first copy of the text we can find (that is not our own)
+	client.Name = client.ID
+
+	var q ClientJSON
+	if err := websocket.JSON.Receive(client.Socket, &q); err != nil {
+		return
+	}
+
+	Router.Echo <- echo("inform", Sprintf("%s connected.", client.Name), "Server")
+
+	// Request a clean copy of the 'active' document for on behalf of this client.
 	for peer := range Router.Clients {
 		if client != peer {
 			websocket.JSON.Send(peer.Socket, &ClientJSON{Action: "fetch-editor", Origin: client.Name})
@@ -61,17 +63,20 @@ func WebsocketHandler(ws *websocket.Conn) {
 		}
 	}
 
-	// ForEhVer: http://www.youtube.com/watch?v=H-Q7b-vHY3Q
 	for {
 
 		var q ClientJSON
+
 		if err := websocket.JSON.Receive(client.Socket, &q); err != nil {
 			break
 		}
 
-		//println(Sprintf("%s: %s => %s", client.Name, q.Action, q.Data))
+		println(Sprintf("%s: %s => %s", client.Name, q.Action, q.Data))
 
-		// what to do...
+		// JSON comes in from a client
+		// We peek at the Action which is an intent from the client
+		// and handle it accordingly
+
 		switch q.Action {
 
 		case "disconnect":
@@ -79,6 +84,7 @@ func WebsocketHandler(ws *websocket.Conn) {
 
 		case "speech":
 			Router.Echo <- echo("speech", q.Data, client.Name)
+
 		case "lock":
 			client.Lock = true
 			Router.Broadcast <- client.mesg("lock", q.Data, client.Name)

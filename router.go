@@ -2,6 +2,9 @@ package main
 
 import (
 	"code.google.com/p/go.net/websocket"
+	"crypto/sha1"
+	"fmt"
+	"time"
 )
 
 type router struct {
@@ -11,6 +14,7 @@ type router struct {
 	Broadcast chan *Message
 	Send      chan *Message
 	Clients   map[*Client]bool
+	GetID     chan string
 }
 
 var Router = router{
@@ -20,6 +24,7 @@ var Router = router{
 	Broadcast: make(chan *Message),
 	Send:      make(chan *Message),
 	Clients:   make(map[*Client]bool),
+	GetID:     make(chan string),
 }
 
 type Message struct {
@@ -29,14 +34,24 @@ type Message struct {
 
 // await work on a channel
 func (Router *router) HandleClients() {
+
+	// borrowed from cloudflare : http://blog.cloudflare.com/go-at-cloudflare
+	go func() {
+		h := sha1.New()
+		for {
+			h.Write([]byte(time.Now().String()))
+			Router.GetID <- fmt.Sprintf("%X", h.Sum(nil))
+		}
+	}()
+
 	for {
 		select {
 
-		// ADD *client
+		// ADD
 		case client := <-Router.Add:
 			Router.Clients[client] = true
 
-		// REMOVE *client
+		// REMOVE
 		case client := <-Router.Remove:
 			client.Socket.Close()
 			delete(Router.Clients, client)
@@ -47,15 +62,15 @@ func (Router *router) HandleClients() {
 				websocket.JSON.Send(client.Socket, Data)
 			}
 
-		// BROADCAST (!SEND)
+		// BROADCAST (!CLIENT)
 		case message := <-Router.Broadcast:
-			for client := range Router.Clients {
-				if client != message.Client {
-					websocket.JSON.Send(message.Client.Socket, message.JSON)
+			for peer := range Router.Clients {
+				if peer != message.Client {
+					websocket.JSON.Send(peer.Socket, message.JSON)
 				}
 			}
 
-		// SEND (!BROADCAST)
+		// SEND
 		case message := <-Router.Send:
 			websocket.JSON.Send(message.Client.Socket, message.JSON)
 		}
