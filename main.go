@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-var host = flag.String("host", ":443", "host to bind to")
+var host = flag.String("host", ":8080", "host to bind to")
 var root = flag.String("root", "www/", "webserver document root folder")
 var cert = flag.String("cert", "cert.pem", "tls certificate")
 var key = flag.String("key", "key.pem", "tls certificate key")
-var useTLS = flag.Bool("tls", true, "enable TLS")
+var useTLS = flag.Bool("tls", false, "enable TLS")
 var useWWW = flag.Bool("www", true, "enable local webserver")
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 	flag.Parse()
 	mux := http.NewServeMux()
 
-	// attach a fileserver to this mux
+	// attach a fileserver to this mux if requested
 	if *useWWW {
 		mux.Handle("/", http.FileServer(http.Dir(*root)))
 	}
