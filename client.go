@@ -11,6 +11,7 @@ type Client struct {
 	Name   string          // a nickname
 	Lock   bool            // a lock to prevent the client from editing the active document
 	Socket *websocket.Conn // websocket for this client
+	Key    string          // id of document
 }
 
 // JSON format of a client intent, payload and origin
@@ -39,19 +40,21 @@ func WebsocketHandler(ws *websocket.Conn) {
 
 	client := &Client{ID: <-Router.GetID, Socket: ws}
 
+	// we need a document key before we add this client
+	var q ClientJSON
+	if err := websocket.JSON.Receive(client.Socket, &q); err != nil {
+		return
+	}
+
+	client.Name = q.Origin
+	client.Key = q.Data
+
 	Router.Add <- client
 
 	defer func() {
 		Router.Remove <- client
 		Router.Broadcast <- client.mesg("inform", Sprintf("%s disconnected.", client.Name), "Server")
 	}()
-
-	client.Name = client.ID
-
-	var q ClientJSON
-	if err := websocket.JSON.Receive(client.Socket, &q); err != nil {
-		return
-	}
 
 	Router.Echo <- echo("inform", Sprintf("%s connected.", client.Name), "Server")
 
@@ -71,7 +74,7 @@ func WebsocketHandler(ws *websocket.Conn) {
 			break
 		}
 
-		println(Sprintf("%s: %s => %s", client.Name, q.Action, q.Data))
+		println(Sprintf("%s: `%s` %s => %s", client.Name, client.Key, q.Action, q.Data))
 
 		// JSON comes in from a client
 		// We peek at the Action which is an intent from the client

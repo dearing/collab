@@ -13,7 +13,7 @@ type router struct {
 	Echo      chan *ClientJSON
 	Broadcast chan *Message
 	Send      chan *Message
-	Clients   map[*Client]bool
+	Clients   map[*Client]string
 	GetID     chan string
 }
 
@@ -23,7 +23,7 @@ var Router = router{
 	Echo:      make(chan *ClientJSON),
 	Broadcast: make(chan *Message),
 	Send:      make(chan *Message),
-	Clients:   make(map[*Client]bool),
+	Clients:   make(map[*Client]string),
 	GetID:     make(chan string),
 }
 
@@ -36,6 +36,7 @@ type Message struct {
 func (Router *router) HandleClients() {
 
 	// borrowed from cloudflare : http://blog.cloudflare.com/go-at-cloudflare
+	// Generates a string id from a timestamp
 	go func() {
 		h := sha1.New()
 		for {
@@ -49,7 +50,7 @@ func (Router *router) HandleClients() {
 
 		// ADD
 		case client := <-Router.Add:
-			Router.Clients[client] = true
+			Router.Clients[client] = client.Key
 
 		// REMOVE
 		case client := <-Router.Remove:
@@ -62,11 +63,13 @@ func (Router *router) HandleClients() {
 				websocket.JSON.Send(client.Socket, Data)
 			}
 
-		// BROADCAST (!CLIENT)
+		// BROADCAST (ALL !CLIENT)
 		case message := <-Router.Broadcast:
-			for peer := range Router.Clients {
+			for peer,key := range Router.Clients {
 				if peer != message.Client {
-					websocket.JSON.Send(peer.Socket, message.JSON)
+					if key == message.Client.Key {
+						websocket.JSON.Send(peer.Socket, message.JSON)
+					}
 				}
 			}
 

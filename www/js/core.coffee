@@ -6,7 +6,8 @@ if !localStorage?
 ws 		= null
 count 	= 1
 store 	= localStorage
-server 	= "wss://#{window.location.host}/collab"
+key     = window.location.hash
+server 	= "ws://#{window.location.host}/collab"
 
 copen 	= new Audio "snd/c-open.ogg"
 cclose 	= new Audio "snd/c-close.ogg"
@@ -52,7 +53,7 @@ wsconnect = ->
 	ws.close() if ws?
 	ws = new WebSocket server
 	ws.onopen = ->
-		ws.send JSON.stringify {Action:"update-nick",Data: user.name}
+		ws.send JSON.stringify {Action:"update-nick",Data: key,Origin: user.name}
 		copen.play()
 	ws.onclose = ->
 		cclose.play()
