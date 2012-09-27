@@ -10,8 +10,8 @@ import (
 type router struct {
 	Add       chan *Client
 	Remove    chan *Client
-	Echo      chan *ClientJSON
 	Broadcast chan *Message
+	Echo      chan *Message
 	Send      chan *Message
 	Clients   map[*Client]string
 	GetID     chan string
@@ -20,8 +20,8 @@ type router struct {
 var Router = router{
 	Add:       make(chan *Client),
 	Remove:    make(chan *Client),
-	Echo:      make(chan *ClientJSON),
 	Broadcast: make(chan *Message),
+	Echo:      make(chan *Message),
 	Send:      make(chan *Message),
 	Clients:   make(map[*Client]string),
 	GetID:     make(chan string),
@@ -57,15 +57,17 @@ func (Router *router) HandleClients() {
 			client.Socket.Close()
 			delete(Router.Clients, client)
 
-		// ECHO
-		case Data := <-Router.Echo:
-			for client := range Router.Clients {
-				websocket.JSON.Send(client.Socket, Data)
+		// BROADCAST
+		case message := <-Router.Echo:
+			for peer, key := range Router.Clients {
+				if key == message.Client.Key {
+					websocket.JSON.Send(peer.Socket, message.JSON)
+				}
 			}
 
 		// BROADCAST (ALL !CLIENT)
 		case message := <-Router.Broadcast:
-			for peer,key := range Router.Clients {
+			for peer, key := range Router.Clients {
 				if peer != message.Client {
 					if key == message.Client.Key {
 						websocket.JSON.Send(peer.Socket, message.JSON)

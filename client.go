@@ -21,12 +21,6 @@ type ClientJSON struct {
 	Origin string // origin of intent
 }
 
-// One can just us &ClientJSON directly but I find it all messy when stacked as I do later.
-// So this is just to clean it all up.
-func echo(action, data, origin string) *ClientJSON {
-	return &ClientJSON{Action: action, Data: data, Origin: origin}
-}
-
 // One can just us &Message directly but I find it all messy when stacked as I do later.
 // More so in this case as it is nested.
 func (client *Client) mesg(action, data, origin string) *Message {
@@ -53,10 +47,10 @@ func WebsocketHandler(ws *websocket.Conn) {
 
 	defer func() {
 		Router.Remove <- client
-		Router.Broadcast <- client.mesg("inform", Sprintf("%s disconnected.", client.Name), "Server")
+		Router.Echo <- client.mesg("inform", Sprintf("%s disconnected.", client.Name), "Server")
 	}()
 
-	Router.Echo <- echo("inform", Sprintf("%s connected.", client.Name), "Server")
+	Router.Echo <- client.mesg("inform", Sprintf("%s connected.", client.Name), "Server")
 
 	// Request a clean copy of the 'active' document for on behalf of this client.
 	for peer := range Router.Clients {
@@ -86,7 +80,7 @@ func WebsocketHandler(ws *websocket.Conn) {
 			return
 
 		case "speech":
-			Router.Echo <- echo("speech", q.Data, client.Name)
+			Router.Echo <- client.mesg("speech", q.Data, client.Name)
 
 		case "lock":
 			client.Lock = true
@@ -94,7 +88,7 @@ func WebsocketHandler(ws *websocket.Conn) {
 
 		case "unlock":
 			client.Lock = false
-			Router.Broadcast <- client.mesg("lock", q.Data, client.Name)
+			Router.Broadcast <- client.mesg("unlock", q.Data, client.Name)
 
 		case "update-nick":
 			client.Name, q.Data = q.Data, client.Name // yea, that just happened
