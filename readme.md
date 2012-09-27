@@ -14,7 +14,7 @@ stitched it all together.
 - For convenience, a built in webserver can handle the support files (SSL support off by default).
 - This is not hardened software, do not expect support outside of development.
 - Requires friends to use.
-- Supports private sessions with hashtags `http://myhost/#secret_poetry` for example.
+- Supports privatly shared sessions with hashtags `http://myhost/#secret_poetry` for example.
 - Visit the [download](https://github.com/dearing/collab/downloads) section for pre-built solutions {mac|linux|win}*{arm|amd64|x86}
 
 ![nothing fancy](https://raw.github.com/dearing/collab/master/www/img/collab.png)
