@@ -54,7 +54,7 @@
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#menu2"> Editor Options <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a id='ux-editor-clear' href="#">Clear</a></li>
-					<li><a id='ux-editor-sync' href="#">Send Sync Request</a></li>
+					<li><a id='ux-editor-sync' href="#">Sync</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -77,7 +77,7 @@
 		<div class="modal-body">
 			<p>Uses HTMl5 <a href='http://www.html5rocks.com/en/features/storage'>Storage</a> technology to store and retreive settings on this client.</p>
 			<hr />
-			<label class='textbox'><input type="text" id='settings-username' class='span4' placeholder='spanky'> user's name</label>
+			<label class='textbox'><input type="text" id='settings-username' class='span4' placeholder='nickname'> user nickname</label>
 			<fieldset>
 			<label class='checkbox'><input type='checkbox' id='settings-lineWrapping'>enable line wrapping</input></label>
 			<label class='checkbox'><input type='checkbox' id='settings-lineNumbers'>show line numbers in the editor</input></label>
@@ -136,10 +136,10 @@
 				Editor Mode</label>
 			<label class='select'>
 				<select id='settings-theme'>
-					<option>default</option>
+					<option selected>default</option>
 					<option>ambiance</option>
 					<option>blackboard</option>
-					<option selected>cobalt</option>
+					<option>cobalt</option>
 					<option>eclipse</option>
 					<option>elegant</option>
 					<option>erlang-dark</option>
