@@ -6,8 +6,11 @@ if !localStorage?
 ws 		= null
 count 	= 1
 store 	= localStorage
+
 key     = window.location.hash
 server 	= "ws://#{window.location.host}/collab"
+
+document.title = "#{key}"
 
 copen 	= new Audio "snd/c-open.ogg"
 cclose 	= new Audio "snd/c-close.ogg"
