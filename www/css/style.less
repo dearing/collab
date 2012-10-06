@@ -1,0 +1,111 @@
+//@import "roboto/stylesheet.css";
+
+@android-blue: 			#0099CC;
+@android-purple: 		#9933CC;
+@android-green: 		#669900;
+@android-orange: 		#FF8800;
+@android-red: 			#CC0000;
+
+@android-light-blue: 	#33B5E5;
+@android-light-purple: 	#AA66CC;
+@android-light-green: 	#99CC00;
+@android-light-orange: 	#FFBB33;
+@android-light-red: 	#FF4444;
+
+@base-color:			#000000;
+@base-background:		#FFFFFF;
+@base-link:				@android-blue;
+
+@bar-size:				20%;
+
+html, body
+{
+
+	height:				100%;
+	min-height:			100%;
+	width:				100%;
+	margin:				0;
+	font: 				normal 100% 'RobotoRegular', Arial, sans-serif;
+}
+
+a
+{
+	color:				@base-link;
+	text-decoration: 	none;
+	&:hover				{text-decoration:underline}
+	&:visited			{color:darken(@base-link,10%)}
+}
+
+
+.center
+{
+	margin:				auto;
+	text-align:			center;
+	display:			block;
+}
+
+// inverse and base class for visualy defined sections
+
+.base
+{
+	color: 		@base-color;
+	background: @base-background;
+}
+
+.inverse
+{
+	color: 		@base-background;
+	background: @base-color;
+}
+
+// Focused work
+
+#editor-wrap
+{
+	float:			right;
+	min-height: 	75%;
+	min-width: 		75%;
+}
+
+#inputbox
+{
+	
+}
+
+#input
+{
+	width:100%;
+}
+
+#chatbox
+{
+	min-height: 40em;
+	max-height: 40em;
+	padding: 	.5em;
+	overflow: 	auto;
+
+	.inform
+	{
+		font-size: 80%;
+		font-color: @android-blue;
+	}
+
+	.speech
+	{
+		
+		.origin
+		{
+			font-color: @android-blue;
+		}
+	}
+}
+
+#chatbox-wrap
+{
+	float:	left;
+	min-height: 80%;
+	max-height: 80%;
+	min-width: 	20%;
+	max-width: 	20%;
+	border: 	1px solid @android-blue;
+}

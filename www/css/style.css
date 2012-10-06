@@ -1,16 +1,60 @@
-
-#editor
-{
-	border: 1px solid #ccc;
+html,
+body {
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+  font: normal 100% 'RobotoRegular', Arial, sans-serif;
 }
-
-#chat
-{
-	border: 1px solid #ccc;
-	background-color:#000;
-
-	color:#ccc;
-	padding:2px;
-	height:666px;
-	overflow:auto;
+a {
+  color: #0099cc;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:visited {
+  color: #007399;
+}
+.center {
+  margin: auto;
+  text-align: center;
+  display: block;
+}
+.base {
+  color: black;
+  background: white;
+}
+.inverse {
+  color: white;
+  background: black;
+}
+#editor-wrap {
+  float: right;
+  min-height: 75%;
+  min-width: 75%;
+}
+#input {
+  width: 100%;
+}
+#chatbox {
+  min-height: 40em;
+  max-height: 40em;
+  padding: .5em;
+  overflow: auto;
+}
+#chatbox .inform {
+  font-size: 80%;
+  font-color: #0099cc;
+}
+#chatbox .speech .origin {
+  font-color: #0099cc;
+}
+#chatbox-wrap {
+  float: left;
+  min-height: 80%;
+  max-height: 80%;
+  min-width: 20%;
+  max-width: 20%;
+  border: 1px solid #0099cc;
 }
