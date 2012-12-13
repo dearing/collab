@@ -1,25 +1,17 @@
 var collab_editor = (function () {
-    function collab_editor(name, theme, mode, lineNumbers, indentSize, gutter, lineWrapping, indentWithTabs) {
-        if (typeof name === "undefined") { name = "nobody"; }
-        if (typeof theme === "undefined") { theme = "default"; }
+    function collab_editor(nickname, theme, mode, lineNumbers, indentSize, gutter, lineWrapping, indentWithTabs) {
+        if (typeof nickname === "undefined") { nickname = "nobody"; }
+        if (typeof theme === "undefined") { theme = "twilight"; }
         if (typeof mode === "undefined") { mode = "javascript"; }
         if (typeof lineNumbers === "undefined") { lineNumbers = true; }
         if (typeof indentSize === "undefined") { indentSize = 4; }
         if (typeof gutter === "undefined") { gutter = true; }
         if (typeof lineWrapping === "undefined") { lineWrapping = true; }
         if (typeof indentWithTabs === "undefined") { indentWithTabs = true; }
-        this.name = name;
+        this.nickname = nickname;
         this.theme = theme;
         this.mode = mode;
         this.lineNumbers = lineNumbers;
-        this.indentSize = indentSize;
-        this.gutter = gutter;
-        this.lineWrapping = lineWrapping;
-        this.indentWithTabs = indentWithTabs;
-        this.name = name;
-        this.theme = theme;
-        this.mode = mode;
-        this.lineNumbers = true;
         this.indentSize = indentSize;
         this.gutter = gutter;
         this.lineWrapping = lineWrapping;
@@ -29,7 +21,9 @@ var collab_editor = (function () {
         console.log("loading from localstorage");
         for(var n in this) {
             if(n.search("storage") != 0) {
-                this[n] = localStorage[n];
+                if(localStorage[n] !== undefined) {
+                    this[n] = localStorage[n];
+                }
             }
         }
     };
@@ -45,6 +39,8 @@ var collab_editor = (function () {
 })();
 var editor = new collab_editor();
 editor.storageLoad();
+console.log(editor);
+console.log();
 var c = CodeMirror.fromTextArea(document.getElementById("editor"), editor);
 var chatbox = document.getElementById("chatbox");
 var input = document.getElementById("input");
@@ -73,9 +69,7 @@ function websocketClose(e) {
     console.log("websocket connection closed");
 }
 function websocketMessage(e) {
-    console.log("websocket connection message", e);
     var x = JSON.parse(e.data);
-    console.log(x);
     switch(x.Action) {
         case 'inform': {
             chatbox.innerHTML = "<p class='inform'>" + x.Data + "</p>" + chatbox.innerHTML;
@@ -133,8 +127,9 @@ function updateNick(e) {
     if(e.keyCode == 13) {
         ws.send(JSON.stringify({
             Action: "update-nick",
-            Data: nickname['value']
+            Data: nickname.value
         }));
+        editor.nickname = nickname.value;
         editor.storageSave();
     }
 }
@@ -168,7 +163,7 @@ function updateEditor(data) {
         c.replaceRange(payload.text.join("\n"), payload.from, payload.to);
     }
 }
-nickname['value'] = editor.name;
+nickname.value = editor.nickname;
 theme.value = editor.theme;
 mode.value = editor.mode;
 websocketInit(null);

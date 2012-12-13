@@ -4,42 +4,42 @@ class collab_editor {
     value: string;
 
     constructor (
-        public name?            = "nobody",
-        public theme?           = "default",
+        public nickname?        = "nobody",
+        public theme?           = "twilight",
         public mode?            = "javascript",
-        public lineNumbers      = true,
-        public indentSize       = 4,
+        public lineNumbers?     = true,
+        public indentSize?      = 4,
         public gutter?          = true,
         public lineWrapping?    = true,
         public indentWithTabs?  = true
-        ) {
-        this.name               = name;
-        this.theme              = theme;
-        this.mode               = mode;
-        this.lineNumbers        = true;
-        this.indentSize         = indentSize;
-        this.gutter             = gutter;
-        this.lineWrapping       = lineWrapping;
-        this.indentWithTabs     = indentWithTabs;
-    }
+        ) {}
 
     storageLoad() {
         console.log("loading from localstorage");
-        for (var n in this)
-            if (n.search("storage") != 0)
-                this[n] = localStorage[n];
+        for (var n in this) {
+            if (n.search("storage") != 0) {
+                if(localStorage[n] !== undefined) {
+                    this[n] = localStorage[n];
+                }
+            }
+        }    
     }
 
     storageSave() {
         console.log("saving to localstorage");
-        for (var n in this)
-            if (n.search("storage") != 0)
-                localStorage[n] = this[n];
+        for (var n in this) {
+            if (n.search("storage") != 0){
+             localStorage[n] = this[n];
+            }
+         }
     }
 }
 
 var editor = new collab_editor();
 editor.storageLoad();
+console.log(editor)
+
+console.log()
 
 var c = CodeMirror.fromTextArea(document.getElementById("editor"), editor);
 
@@ -77,9 +77,8 @@ function websocketClose(e) {
 }
 
 function websocketMessage(e) {
-    console.log("websocket connection message",e);
     var x = JSON.parse(e.data);
-    console.log(x)
+
     switch (x.Action) {
 
         case 'inform':
@@ -124,7 +123,8 @@ function chatSend(e) {
 
 function updateNick(e) {
     if (e.keyCode == 13) {
-        ws.send(JSON.stringify({Action:"update-nick", Data: nickname['value']}))
+        ws.send(JSON.stringify({Action:"update-nick", Data: nickname.value}))
+        editor.nickname = nickname.value;
         editor.storageSave();
     }
 }
@@ -164,7 +164,7 @@ function updateEditor(data) {
 }
 
 
-nickname['value']   = editor.name;
+nickname.value      = editor.nickname;
 theme.value         = editor.theme;
 mode.value          = editor.mode;
 
