@@ -4,7 +4,7 @@ class collab_editor {
     value: string;
 
     constructor (
-        public name? = "unknown",
+        public name? = "nobody",
         public theme? = "cobalt",
         public mode? = "javascript",
         public indentSize = 4,
@@ -46,13 +46,14 @@ var editor = new collab_editor();
 editor.storageLoad();
 var c = CodeMirror.fromTextArea(document.getElementById("editor"), editor);
 
-var chatbox     = document.getElementById("chatbox");
-var inputbox    = document.getElementById("inputbox");
-var input       = document.getElementById("input");
+//var chatbox     = document.getElementById("chatbox");
+//var inputbox    = document.getElementById("inputbox");
+//var input       = document.getElementById("input");
 
-input.onkeypress = chatSend;
+//input.onkeypress = chatSend;
 
-var server = "ws://" + window.location.host + "/collab";
+//var server = "ws://" + window.location.host + "/collab";
+var server = "ws://localhost/collab";
 var ws : WebSocket
 var key = window.location.hash;
 document.title = key;
@@ -84,10 +85,12 @@ function websocketMessage(e) {
     console.log(x)
     switch (x.Action) {
         case 'inform':
-            chatbox.innerHTML += "<p class='inform'>" + x.Data + "</p>";
+            //chatbox.innerHTML += "<p class='inform'>" + x.Data + "</p>";
+            //chatbox.scrollTop(999999999);
             break;
         case 'speech':
-            chatbox.innerHTML += "<p class='speech'>" + x.Data + "<br /><span class='origin'>- " + x.Origin + "</span></p>";
+            //chatbox.innerHTML += "<p class='speech'>" + x.Data + "<br /><span class='origin'>- " + x.Origin + "</span></p>";
+            //chatbox.scrollTop(999999999);
             break;
         case 'update-editor':
         case 'update-editor-full':
@@ -104,8 +107,8 @@ function websocketOpen(e) {
 
 function chatSend(e) {
     if (e.keyCode == 13) {
-        ws.send(JSON.stringify({Action:"speech",Data: input['value']}))
-        input['value'] = "";
+        //ws.send(JSON.stringify({Action:"speech",Data: input['value']}))
+        //input['value'] = "";
     }
 }
 

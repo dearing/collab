@@ -1,6 +1,6 @@
 var collab_editor = (function () {
     function collab_editor(name, theme, mode, indentSize, gutter, lineWrapping, indentWithTabs) {
-        if (typeof name === "undefined") { name = "unknown"; }
+        if (typeof name === "undefined") { name = "nobody"; }
         if (typeof theme === "undefined") { theme = "cobalt"; }
         if (typeof mode === "undefined") { mode = "javascript"; }
         if (typeof indentSize === "undefined") { indentSize = 4; }
@@ -43,11 +43,7 @@ var collab_editor = (function () {
 var editor = new collab_editor();
 editor.storageLoad();
 var c = CodeMirror.fromTextArea(document.getElementById("editor"), editor);
-var chatbox = document.getElementById("chatbox");
-var inputbox = document.getElementById("inputbox");
-var input = document.getElementById("input");
-input.onkeypress = chatSend;
-var server = "ws://" + window.location.host + "/collab";
+var server = "ws://localhost/collab";
 var ws;
 var key = window.location.hash;
 document.title = key;
@@ -73,12 +69,10 @@ function websocketMessage(e) {
     console.log(x);
     switch(x.Action) {
         case 'inform': {
-            chatbox.innerHTML += "<p class='inform'>" + x.Data + "</p>";
             break;
 
         }
         case 'speech': {
-            chatbox.innerHTML += "<p class='speech'>" + x.Data + "<br /><span class='origin'>- " + x.Origin + "</span></p>";
             break;
 
         }
@@ -97,11 +91,6 @@ function websocketOpen(e) {
 }
 function chatSend(e) {
     if(e.keyCode == 13) {
-        ws.send(JSON.stringify({
-            Action: "speech",
-            Data: input['value']
-        }));
-        input['value'] = "";
     }
 }
 websocketInit(null);
