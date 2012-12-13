@@ -14,8 +14,6 @@ A live code collaboration tool is handy to have around, more so when you find yo
 - Supports privately shared sessions with hashtags `http://myhost/#secret_poetry` for example.
 - Visit the [download](https://github.com/dearing/collab/downloads) section for pre-built solutions {mac|linux|win}*{arm|amd64|x86}
 
-![nothing fancy](https://raw.github.com/dearing/collab/master/www/img/collab.png)
-
 ## how to build ##
 - [install go](http://golang.org/doc/install)
 - fetch the source
