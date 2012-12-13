@@ -1,19 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8">
     <title>collab</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="css/codemirror.css">
-	<link rel="stylesheet" href="css/codemirror-themes.css">
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="shortcut icon" href="img/favicon.png">
+    <link href="css/style.css" rel="stylesheet" media="screen">
+    <link href="css/codemirror.css" rel="stylesheet" media="screen">
+    <link href="css/codemirror-themes.css" rel="stylesheet" media="screen">
   </head>
-<body>
-		<div id='editor'></div>
-	
-	<script src="js/codemirror.js"></script>
-    <script src="js/core.js"></script>
+  <body>
+    
+        <div class='menu'>
+          nickname: <input id='nickname'></input>
 
-</body>
+          theme: 
+        <select id='theme' onchange='changeTheme()'>
+          <option selected>default</option>
+          <option>ambiance</option>
+          <option>blackboard</option>
+          <option>cobalt</option>
+          <option>eclipse</option>
+          <option>elegant</option>
+          <option>erlang-dark</option>
+          <option>lesser-dark</option>
+          <option>monokai</option>
+          <option>neat</option>
+          <option>night</option>
+          <option>rubyblue</option>
+          <option>solarized dark</option>
+          <option>solarized light</option>
+          <option>twilight</option>
+          <option>vibrant-ink</option>
+          <option>xq-dark</option>
+          </select>
+
+          mode: 
+        <select id='mode' onchange='changeMode()'>
+          <option>clike</option>
+          <option>clojure</option>
+          <option>coffeescript</option>
+          <option>css</option>
+          <option>diff</option>
+          <option>ecl</option>
+          <option>erlang</option>
+          <option>gfm</option>
+          <option>go</option>
+          <option>groovy</option>
+          <option>haskell</option>
+          <option>htmlembedded</option>
+          <option>htmlmixed</option>
+          <option>javascript</option>
+          <option>jinja2</option>
+          <option>less</option>
+          <option>lua</option>
+          <option>markdown</option>
+          <option>mysql</option>
+          <option>ntriples</option>
+          <option>pascal</option>
+          <option>perl</option>
+          <option>php</option>
+          <option>pig</option>
+          <option>plsql</option>
+          <option>properties</option>
+          <option selected>python</option>
+          <option>r</option>
+          <option>rpm</option>
+          <option>rst</option>
+          <option>ruby</option>
+          <option>rust</option>
+          <option>scheme</option>
+          <option>shell</option>
+          <option>smalltalk</option>
+          <option>smarty</option>
+          <option>sparql</option>
+          <option>stex</option>
+          <option>tiddlywiki</option>
+          <option>tiki</option>
+          <option>vbscript</option>
+          <option>velocity</option>
+          <option>verilog</option>
+          <option>xml</option>
+          <option>xquery</option>
+          <option>yaml</option>
+          </select>
+        </div>
+
+        <div id='editor-box'><textarea id='editor'></textarea></div>
+        <div id='settings-box'></div>
+
+        <div id='inputbox'><span style='color:#999'>chat: </span><input id='input'></input></div>
+        <div id='chatbox'></div>
+
+
+    <script src="js/codemirror.js"></script>
+    <script src="js/core.js"></script>
+    <script>
+      if(window.location.hash == "")
+        window.location.hash = "#" + generateKey();
+    </script>
+  </body>
 </html>

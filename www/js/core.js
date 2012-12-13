@@ -1,8 +1,9 @@
 var collab_editor = (function () {
-    function collab_editor(name, theme, mode, indentSize, gutter, lineWrapping, indentWithTabs) {
+    function collab_editor(name, theme, mode, lineNumbers, indentSize, gutter, lineWrapping, indentWithTabs) {
         if (typeof name === "undefined") { name = "nobody"; }
-        if (typeof theme === "undefined") { theme = "cobalt"; }
+        if (typeof theme === "undefined") { theme = "default"; }
         if (typeof mode === "undefined") { mode = "javascript"; }
+        if (typeof lineNumbers === "undefined") { lineNumbers = true; }
         if (typeof indentSize === "undefined") { indentSize = 4; }
         if (typeof gutter === "undefined") { gutter = true; }
         if (typeof lineWrapping === "undefined") { lineWrapping = true; }
@@ -10,6 +11,7 @@ var collab_editor = (function () {
         this.name = name;
         this.theme = theme;
         this.mode = mode;
+        this.lineNumbers = lineNumbers;
         this.indentSize = indentSize;
         this.gutter = gutter;
         this.lineWrapping = lineWrapping;
@@ -17,6 +19,7 @@ var collab_editor = (function () {
         this.name = name;
         this.theme = theme;
         this.mode = mode;
+        this.lineNumbers = true;
         this.indentSize = indentSize;
         this.gutter = gutter;
         this.lineWrapping = lineWrapping;
@@ -31,7 +34,7 @@ var collab_editor = (function () {
         }
     };
     collab_editor.prototype.storageSave = function () {
-        console.log("saveing to localstorage");
+        console.log("saving to localstorage");
         for(var n in this) {
             if(n.search("storage") != 0) {
                 localStorage[n] = this[n];
@@ -43,10 +46,16 @@ var collab_editor = (function () {
 var editor = new collab_editor();
 editor.storageLoad();
 var c = CodeMirror.fromTextArea(document.getElementById("editor"), editor);
-var server = "ws://localhost/collab";
+var chatbox = document.getElementById("chatbox");
+var input = document.getElementById("input");
+var theme = document.getElementById("theme");
+var mode = document.getElementById("mode");
+var nickname = document.getElementById("nickname");
+input.onkeypress = chatSend;
+nickname.onkeypress = updateNick;
+var server = "ws://" + window.location.host + "/collab";
 var ws;
-var key = window.location.hash;
-document.title = key;
+var key = window.location.hash.substr(1, window.location.hash.length - 1);
 function websocketInit(e) {
     if(ws != undefined) {
         ws.close();
@@ -69,16 +78,38 @@ function websocketMessage(e) {
     console.log(x);
     switch(x.Action) {
         case 'inform': {
+            chatbox.innerHTML = "<p class='inform'>" + x.Data + "</p>" + chatbox.innerHTML;
             break;
 
         }
         case 'speech': {
+            chatbox.innerHTML = "<p class='speech'><span class='origin'>" + x.Origin + "</span> : " + x.Data + "</p>" + chatbox.innerHTML;
             break;
 
         }
-        case 'update-editor':
-        case 'update-editor-full':
-        case 'fetch-editor':
+        case 'update-editor': {
+            c.off("change", handleEditorChange);
+            updateEditor(x.Data);
+            c.on("change", handleEditorChange);
+            break;
+
+        }
+        case 'update-editor-full': {
+            c.off("change", handleEditorChange);
+            c.setValue(x.Data);
+            c.on("change", handleEditorChange);
+            break;
+
+        }
+        case 'fetch-editor': {
+            ws.send(JSON.stringify({
+                Action: "update-editor-full",
+                Data: c.getValue(),
+                Origin: x.Origin
+            }));
+            break;
+
+        }
     }
 }
 function websocketOpen(e) {
@@ -91,6 +122,54 @@ function websocketOpen(e) {
 }
 function chatSend(e) {
     if(e.keyCode == 13) {
+        ws.send(JSON.stringify({
+            Action: "speech",
+            Data: input['value']
+        }));
+        input['value'] = "";
     }
 }
+function updateNick(e) {
+    if(e.keyCode == 13) {
+        ws.send(JSON.stringify({
+            Action: "update-nick",
+            Data: nickname['value']
+        }));
+        editor.storageSave();
+    }
+}
+function changeTheme() {
+    c.setOption("theme", theme.options[theme.selectedIndex].innerHTML);
+    editor.storageSave();
+}
+function changeMode() {
+    c.setOption("mode", mode.options[mode.selectedIndex].innerHTML);
+    editor.storageSave();
+}
+function generateKey() {
+    var b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var key = "DOC:";
+    for(var i = 0; i < 25; i++) {
+        key += b.charAt(Math.floor(Math.random() * b.length - 1));
+    }
+    return key;
+}
+function handleEditorChange(o, u) {
+    ws.send(JSON.stringify({
+        Action: 'update-editor',
+        Data: JSON.stringify(u)
+    }));
+}
+function updateEditor(data) {
+    var payload = JSON.parse(data);
+    c.replaceRange(payload.text.join("\n"), payload.from, payload.to);
+    while('next' in payload) {
+        payload = payload.next;
+        c.replaceRange(payload.text.join("\n"), payload.from, payload.to);
+    }
+}
+nickname['value'] = editor.name;
+theme.value = editor.theme;
+mode.value = editor.mode;
 websocketInit(null);
+c.on("change", handleEditorChange);

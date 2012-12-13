@@ -40,6 +40,7 @@ func WebsocketHandler(ws *websocket.Conn) {
 		return
 	}
 
+	//client.Name = q.Origin
 	client.Name = q.Origin
 	client.Key = q.Data
 
@@ -47,10 +48,10 @@ func WebsocketHandler(ws *websocket.Conn) {
 
 	defer func() {
 		Router.Remove <- client
-		Router.Echo <- client.mesg("inform", Sprintf("%s disconnected.", client.Name), "Server")
+		Router.Echo <- client.mesg("inform", Sprintf("user %s disconnected.", client.Name), "Server")
 	}()
 
-	Router.Echo <- client.mesg("inform", Sprintf("%s connected.", client.Name), "Server")
+	Router.Echo <- client.mesg("inform", Sprintf("user %s connected.", client.Name), "Server")
 
 	// Request a clean copy of the 'active' document for on behalf of this client.
 	for peer := range Router.Clients {
@@ -92,7 +93,7 @@ func WebsocketHandler(ws *websocket.Conn) {
 
 		case "update-nick":
 			client.Name, q.Data = q.Data, client.Name // yea, that just happened
-			Router.Broadcast <- client.mesg("inform", Sprintf("%s changed nickname to %s", q.Data, client.Name), client.Name)
+			Router.Echo <- client.mesg("inform", Sprintf("%s changed nickname to %s", q.Data, client.Name), client.Name)
 
 		case "update-editor", "fetch-editor", "update-editor-full":
 			Router.Broadcast <- client.mesg(q.Action, q.Data, client.Name)
