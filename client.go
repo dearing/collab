@@ -40,7 +40,6 @@ func WebsocketHandler(ws *websocket.Conn) {
 		return
 	}
 
-	//client.Name = q.Origin
 	client.Name = q.Origin
 	client.Key = q.Data
 

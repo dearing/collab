@@ -110,7 +110,7 @@ function websocketMessage(e) {
 
 function websocketOpen(e) {
     console.log("websocket connection opened");
-    ws.send(JSON.stringify({Action:"update-nick",Data: key, Origin: editor.name }))
+    ws.send(JSON.stringify({Action:"update-nick",Data: key, Origin: editor.nickname }))
 }
 
 

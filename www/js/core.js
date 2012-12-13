@@ -111,7 +111,7 @@ function websocketOpen(e) {
     ws.send(JSON.stringify({
         Action: "update-nick",
         Data: key,
-        Origin: editor.name
+        Origin: editor.nickname
     }));
 }
 function chatSend(e) {
