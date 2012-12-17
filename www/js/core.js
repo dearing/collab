@@ -1,5 +1,5 @@
-var collab_editor = (function () {
-    function collab_editor(nickname, theme, mode, lineNumbers, indentSize, gutter, lineWrapping, indentWithTabs) {
+var userOptions = (function () {
+    function userOptions(nickname, theme, mode, lineNumbers, indentSize, gutter, lineWrapping, indentWithTabs) {
         if (typeof nickname === "undefined") { nickname = "nobody"; }
         if (typeof theme === "undefined") { theme = "twilight"; }
         if (typeof mode === "undefined") { mode = "javascript"; }
@@ -17,7 +17,7 @@ var collab_editor = (function () {
         this.lineWrapping = lineWrapping;
         this.indentWithTabs = indentWithTabs;
     }
-    collab_editor.prototype.storageLoad = function () {
+    userOptions.prototype.storageLoad = function () {
         console.log("loading from localstorage");
         for(var n in this) {
             if(n.search("storage") != 0) {
@@ -27,7 +27,7 @@ var collab_editor = (function () {
             }
         }
     };
-    collab_editor.prototype.storageSave = function () {
+    userOptions.prototype.storageSave = function () {
         console.log("saving to localstorage");
         for(var n in this) {
             if(n.search("storage") != 0) {
@@ -35,13 +35,11 @@ var collab_editor = (function () {
             }
         }
     };
-    return collab_editor;
+    return userOptions;
 })();
-var editor = new collab_editor();
-editor.storageLoad();
-console.log(editor);
-console.log();
-var c = CodeMirror.fromTextArea(document.getElementById("editor"), editor);
+var user = new userOptions();
+user.storageLoad();
+var editor = CodeMirror.fromTextArea(document.getElementById("editor"), user);
 var chatbox = document.getElementById("chatbox");
 var input = document.getElementById("input");
 var theme = document.getElementById("theme");
@@ -73,11 +71,13 @@ function websocketMessage(e) {
     switch(x.Action) {
         case 'inform': {
             chatbox.innerHTML = "<p class='inform'>" + x.Data + "</p>" + chatbox.innerHTML;
+            notify('img/favicon.png', x.Origin, x.Data);
             break;
 
         }
         case 'speech': {
             chatbox.innerHTML = "<p class='speech'><span class='origin'>" + x.Origin + "</span> : " + x.Data + "</p>" + chatbox.innerHTML;
+            notify('img/favicon.png', x.Origin, x.Data);
             break;
 
         }
@@ -106,12 +106,32 @@ function websocketMessage(e) {
         }
     }
 }
+function request_permission() {
+    if(window.webkitNotifications.checkPermission() == 0) {
+        window.webkitNotifications.createNotification();
+    } else {
+        window.webkitNotifications.requestPermission();
+    }
+}
+function notify(image, title, content) {
+    if(window.Notification) {
+        var n = new Notification(title, {
+            body: content,
+            iconUrl: image
+        });
+        n.onshow = function () {
+            setTimeout(function () {
+                n.close();
+            }, 4000);
+        };
+    }
+}
 function websocketOpen(e) {
     console.log("websocket connection opened");
     ws.send(JSON.stringify({
         Action: "update-nick",
         Data: key,
-        Origin: editor.nickname
+        Origin: user.nickname
     }));
 }
 function chatSend(e) {
@@ -124,22 +144,22 @@ function chatSend(e) {
     }
 }
 function updateNick(e) {
-    if(e.keyCode == 13) {
+    if(e.keyCode == 13 && nickname.value != user.nickname) {
         ws.send(JSON.stringify({
             Action: "update-nick",
             Data: nickname.value
         }));
-        editor.nickname = nickname.value;
-        editor.storageSave();
+        user.nickname = nickname.value;
+        user.storageSave();
     }
 }
 function changeTheme() {
-    c.setOption("theme", theme.options[theme.selectedIndex].innerHTML);
-    editor.storageSave();
+    editor.setOption("theme", theme.options[theme.selectedIndex].innerHTML);
+    user.storageSave();
 }
 function changeMode() {
-    c.setOption("mode", mode.options[mode.selectedIndex].innerHTML);
-    editor.storageSave();
+    editor.setOption("mode", mode.options[mode.selectedIndex].innerHTML);
+    user.storageSave();
 }
 function generateKey() {
     var b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -157,14 +177,14 @@ function handleEditorChange(o, u) {
 }
 function updateEditor(data) {
     var payload = JSON.parse(data);
-    c.replaceRange(payload.text.join("\n"), payload.from, payload.to);
+    editor.replaceRange(payload.text.join("\n"), payload.from, payload.to);
     while('next' in payload) {
         payload = payload.next;
-        c.replaceRange(payload.text.join("\n"), payload.from, payload.to);
+        editor.replaceRange(payload.text.join("\n"), payload.from, payload.to);
     }
 }
-nickname.value = editor.nickname;
-theme.value = editor.theme;
-mode.value = editor.mode;
+nickname.value = user.nickname;
+theme.value = user.theme;
+mode.value = user.mode;
 websocketInit(null);
-c.on("change", handleEditorChange);
+editor.on("change", handleEditorChange);

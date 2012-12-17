@@ -1,6 +1,6 @@
 declare var CodeMirror;
 
-class collab_editor {
+class userOptions {
     value: string;
 
     constructor (
@@ -35,13 +35,10 @@ class collab_editor {
     }
 }
 
-var editor = new collab_editor();
-editor.storageLoad();
-console.log(editor)
+var user = new userOptions();
+user.storageLoad();
 
-console.log()
-
-var c = CodeMirror.fromTextArea(document.getElementById("editor"), editor);
+var editor = CodeMirror.fromTextArea(document.getElementById("editor"), user);
 
 var chatbox     = document.getElementById("chatbox");
 var input       = document.getElementById("input");
@@ -83,10 +80,12 @@ function websocketMessage(e) {
 
         case 'inform':
             chatbox.innerHTML = "<p class='inform'>" + x.Data + "</p>" + chatbox.innerHTML;
+            notify('img/favicon.png',x.Origin,x.Data)
             break;
 
         case 'speech':
             chatbox.innerHTML = "<p class='speech'><span class='origin'>" + x.Origin + "</span> : " + x.Data + "</p>" + chatbox.innerHTML;
+            notify('img/favicon.png',x.Origin,x.Data)
             break;
 
         case 'update-editor':
@@ -108,9 +107,28 @@ function websocketMessage(e) {
 
 }
 
+function request_permission()
+{
+    // 0 means we have permission to display notifications
+    if (window.webkitNotifications.checkPermission() == 0) {
+        window.webkitNotifications.createNotification();
+        } else {
+        window.webkitNotifications.requestPermission();
+    }
+}
+
+
+function notify(image, title, content)
+{
+    if (window.Notification) {
+        var n = new Notification(title, {body: content, iconUrl: image });
+        n.onshow   = function() { setTimeout(function() {n.close()}, 4000)};
+    }
+}
+
 function websocketOpen(e) {
     console.log("websocket connection opened");
-    ws.send(JSON.stringify({Action:"update-nick",Data: key, Origin: editor.nickname }))
+    ws.send(JSON.stringify({Action:"update-nick",Data: key, Origin: user.nickname }))
 }
 
 
@@ -122,21 +140,21 @@ function chatSend(e) {
 }
 
 function updateNick(e) {
-    if (e.keyCode == 13) {
+    if (e.keyCode == 13 && nickname.value != user.nickname) {
         ws.send(JSON.stringify({Action:"update-nick", Data: nickname.value}))
-        editor.nickname = nickname.value;
-        editor.storageSave();
+        user.nickname = nickname.value;
+        user.storageSave();
     }
 }
 
 function changeTheme() {
-    c.setOption("theme", theme.options[theme.selectedIndex].innerHTML);
-    editor.storageSave();
+    editor.setOption("theme", theme.options[theme.selectedIndex].innerHTML);
+    user.storageSave();
 }
 
 function changeMode() {
-    c.setOption("mode", mode.options[mode.selectedIndex].innerHTML);
-    editor.storageSave();
+    editor.setOption("mode", mode.options[mode.selectedIndex].innerHTML);
+    user.storageSave();
 }
 
 function generateKey() {
@@ -155,19 +173,20 @@ function handleEditorChange(o, u) {
 
 function updateEditor(data) {
     var payload = JSON.parse(data);
-    c.replaceRange(payload.text.join("\n"), payload.from, payload.to);
+    editor.replaceRange(payload.text.join("\n"), payload.from, payload.to);
 
     while('next' in payload) {
         payload = payload.next
-        c.replaceRange(payload.text.join("\n"), payload.from, payload.to);
+        editor.replaceRange(payload.text.join("\n"), payload.from, payload.to);
     }
 }
 
 
-nickname.value      = editor.nickname;
-theme.value         = editor.theme;
-mode.value          = editor.mode;
+nickname.value      = user.nickname;
+theme.value         = user.theme;
+mode.value          = user.mode;
 
 websocketInit(null);
-c.on("change", handleEditorChange);
+editor.on("change", handleEditorChange);
+
 
