@@ -17,9 +17,10 @@ Collab = {
     //===================================================================
     //  WEBSOCKET
     //===================================================================
+
     wsopen: function () {
         console.log("connected");
-        ws.send(JSON.stringify( { Action:"update-nickname", Data: "testing", Origin: "jacob dearing" }))
+        Collab.send("nickname","TESTING-KEY","nobody")
     },
 
     wsclose: function () {
@@ -38,20 +39,26 @@ Collab = {
                 Collab.oninform(x.Data);
                 break;
 
-            case "speech":
-                Collab.onspeech(x.Origin, x.Data);
+            case "message":
+                Collab.onmessage(x.Origin, x.Data);
                 break;
 
-            case "update-editor":
-                Collab.ondata(x.Origin, x.Data);
+            case "update":
+                Collab.onupdate(x.Origin, x.Data);
+                break;
+
+            case "request":
+                Collab.onrequest();
         }
     },
+
 
     //===================================================================
     //  MISC.
     //===================================================================
+
     compatible: function() {
-        return window.WebSocket && window.localStorage;
+        return window.WebSocket;
     },
 
     createKey: function () {
@@ -63,25 +70,21 @@ Collab = {
     //===================================================================
     //  API
     //===================================================================
-    sendMessage: function (message) {
-        ws.send(JSON.stringify( { Action:"speech", Data: message }));
+
+    send: function (action, data, origin) {
+        ws.send(JSON.stringify( { Action: action, Data: data, Origin: origin}));
     },
 
-    sendData: function (data) {
-        ws.send(JSON.stringify( {Action:"update-editor", Data: data}));
-    },
-
-    changeNickname: function (nickname) {
-        ws.send(JSON.stringify( { Action:"update-nick", Data: nickname }))
-    },
-
-    oninform: function () {console.log("`oninform` not implemented")},
-    onspeech: function () {console.log("`onspeech` not implemented")},
-    ondata:   function () {console.log("`ondata` not implemented")},
+    oninform:   function () {console.log("`oninform` not implemented")},
+    onmessage:  function () {console.log("`onmessage` not implemented")},
+    onchange:   function () {console.log("`onchange` not implemented")},
+    onrequest:  function () {console.log("`onrequest` not implemented")},
+    onupdate:   function () {console.log("`update` not implemented")},
 
     //===================================================================
     //  LOCALSTORAGE
     //===================================================================
+
     load: function () {
         console.log("not implemented");
     },

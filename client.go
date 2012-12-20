@@ -28,14 +28,13 @@ func (client *Client) mesg(action, data, origin string) *Message {
 }
 
 // At this point we have a goroutine handling this client who requested this websocket
-// The client is considered connected for the remainder of this routine, since this is
-// on a goroutine we do not need to fret about blocking.
+// The client is considered connected for the remainder of this routine, and since this
+// is on a goroutine we do not need to fret about blocking.
 func WebsocketHandler(ws *websocket.Conn) {
 
-	Println("new connection...")
 	client := &Client{ID: <-Router.GetID, Socket: ws}
 
-	// we need a document key before we add this client
+	// we need a key before we constuct this client; a handshake of sorts
 	var q ClientJSON
 	if err := websocket.JSON.Receive(client.Socket, &q); err != nil {
 		return
@@ -56,7 +55,7 @@ func WebsocketHandler(ws *websocket.Conn) {
 	// Request a clean copy of the 'active' document for on behalf of this client.
 	for peer := range Router.Clients {
 		if client != peer {
-			websocket.JSON.Send(peer.Socket, &ClientJSON{Action: "fetch-editor", Origin: client.Name})
+			websocket.JSON.Send(peer.Socket, &ClientJSON{Action: "data request", Origin: client.Name})
 			break
 		}
 	}
@@ -80,8 +79,8 @@ func WebsocketHandler(ws *websocket.Conn) {
 		case "disconnect":
 			return
 
-		case "speech":
-			Router.Echo <- client.mesg("speech", q.Data, client.Name)
+		case "message":
+			Router.Echo <- client.mesg("message", q.Data, client.Name)
 
 		case "lock":
 			client.Lock = true
@@ -91,12 +90,12 @@ func WebsocketHandler(ws *websocket.Conn) {
 			client.Lock = false
 			Router.Broadcast <- client.mesg("unlock", q.Data, client.Name)
 
-		case "update-nick":
-			client.Name, q.Data = q.Data, client.Name // yea, that just happened
+		case "nickname":
+			client.Name, q.Data = q.Data, client.Name
 			Router.Echo <- client.mesg("inform", Sprintf("%s changed nickname to %s", q.Data, client.Name), client.Name)
 
-		case "update-editor", "fetch-editor", "update-editor-full":
-			Router.Echo <- client.mesg(q.Action, q.Data, client.Name)
+		case "changes", "data request", "update":
+			Router.Broadcast <- client.mesg(q.Action, q.Data, client.Name)
 		}
 	}
 }

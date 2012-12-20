@@ -79,13 +79,14 @@ html, body {
         Collab.connect("ws://localhost:8080/collab");
         
 
-           input.onkeyup = function (e) {if(e.keyCode == 13) {Collab.sendMessage(input.value);input.value = ""}}
-          editor.onkeyup = function (e) {Collab.sendData(editor.value)}
-        nickname.onkeyup = function (e) {if(e.keyCode == 13) {Collab.changeNickname(nickname.value)}}
+           input.onkeyup = function (e) {if(e.keyCode == 13) {Collab.send("message", input.value); input.value = ""}}
+          editor.onkeyup = function (e) {Collab.send("update",editor.value)}
+        nickname.onkeyup = function (e) {if(e.keyCode == 13) {Collab.send("nickname", nickname.value)}}
 
-        Collab.oninform = function (d) {chatbox.innerHTML    = "<p class='inform'>" + d + "</p>" + chatbox.innerHTML};
-        Collab.onspeech = function (o, d) {chatbox.innerHTML = "<p class='speech'> <span class='origin'>" + o + "</span>: " + d + "</p>" + chatbox.innerHTML};
-        Collab.ondata = function (o, d) {editor.value = d};
+        Collab.oninform   = function (d) {chatbox.innerHTML    = "<p class='inform'>" + d + "</p>" + chatbox.innerHTML};
+        Collab.onmessage  = function (o, d) {chatbox.innerHTML = "<p class='speech'> <span class='origin'>" + o + "</span>: " + d + "</p>" + chatbox.innerHTML};
+        Collab.onupdate   = function (o, d) {editor.value = d};
+        Collab.onrequest  = function () {Collab.send("update",editor.value)};
 
         Collab.load();
       }
