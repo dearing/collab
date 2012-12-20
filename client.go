@@ -96,7 +96,7 @@ func WebsocketHandler(ws *websocket.Conn) {
 			Router.Echo <- client.mesg("inform", Sprintf("%s changed nickname to %s", q.Data, client.Name), client.Name)
 
 		case "update-editor", "fetch-editor", "update-editor-full":
-			Router.Broadcast <- client.mesg(q.Action, q.Data, client.Name)
+			Router.Echo <- client.mesg(q.Action, q.Data, client.Name)
 		}
 	}
 }

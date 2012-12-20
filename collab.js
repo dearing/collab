@@ -3,10 +3,7 @@
 //  provides a clean way to communicate with the websocket server
 //===================================================================
 
-
 Collab = {
-
-    //ws: WebSocket,
 
     connect: function (host) {
         ws           = new WebSocket(host);
@@ -18,12 +15,11 @@ Collab = {
 
 
     //===================================================================
-    //  WEBSOCKETS
+    //  WEBSOCKET
     //===================================================================
     wsopen: function () {
         console.log("connected");
-        //Collab.changeNickname("jacob dearing");
-        ws.send(JSON.stringify( { Action:"update-nickname", Data: Collab.createKey(), Origin: "jacob dearing" }))
+        ws.send(JSON.stringify( { Action:"update-nickname", Data: "testing", Origin: "jacob dearing" }))
     },
 
     wsclose: function () {
@@ -39,12 +35,15 @@ Collab = {
         switch( x.Action )
         {
             case "inform":
-                Collab.inform(x.Origin, x.Data);
+                Collab.oninform(x.Data);
                 break;
 
             case "speech":
-                Collab.speech(x.Origin, x.Data);
+                Collab.onspeech(x.Origin, x.Data);
                 break;
+
+            case "update-editor":
+                Collab.ondata(x.Origin, x.Data);
         }
     },
 
@@ -68,16 +67,17 @@ Collab = {
         ws.send(JSON.stringify( { Action:"speech", Data: message }));
     },
 
-    sendChanges: function (changeset) {
-        ws.send(JSON.stringify( { Action:"update-editor", Data: changeset }))
+    sendData: function (data) {
+        ws.send(JSON.stringify( {Action:"update-editor", Data: data}));
     },
 
     changeNickname: function (nickname) {
-        ws.send(JSON.stringify( { Action:"update-nickname", Data: nickname }))
+        ws.send(JSON.stringify( { Action:"update-nick", Data: nickname }))
     },
 
-    inform: function () {},
-    speech: function () {},
+    oninform: function () {console.log("`oninform` not implemented")},
+    onspeech: function () {console.log("`onspeech` not implemented")},
+    ondata:   function () {console.log("`ondata` not implemented")},
 
     //===================================================================
     //  LOCALSTORAGE

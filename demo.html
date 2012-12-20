@@ -13,6 +13,7 @@ html, body {
 
 #menu {
   padding:1em;
+  color:#999;
 }
 
 #editor-box {
@@ -47,9 +48,14 @@ html, body {
   color: #669900;
 }
 
-#chatbox .speech .origin  {
+#chatbox .speech  {
+  color: #bbcccc;
+}
+
+#chatbox .origin  {
   color: #0099cc;
 }
+
 
 </style>
   </head>
@@ -61,6 +67,7 @@ html, body {
 
     <script src="collab.js"></script>
     <script>
+    var nickname  = document.getElementById("nickname");
     var input     = document.getElementById("input");
     var chatbox   = document.getElementById("chatbox");
     var editor    = document.getElementById("editor");
@@ -70,12 +77,15 @@ html, body {
       if(Collab.compatible()) {
         
         Collab.connect("ws://localhost:8080/collab");
+        
 
-         input.onkeypress = function (e) {if(e.keyCode == 13) {Collab.sendMessage(input.value)}}
-        editor.onkeypress = function (e) {Collab.updateEditor(editor.value)}
+           input.onkeyup = function (e) {if(e.keyCode == 13) {Collab.sendMessage(input.value);input.value = ""}}
+          editor.onkeyup = function (e) {Collab.sendData(editor.value)}
+        nickname.onkeyup = function (e) {if(e.keyCode == 13) {Collab.changeNickname(nickname.value)}}
 
-        Collab.inform = function (o, d) {chatbox.innerHTML = "<p class='inform'>" + o + ": " + d + "</p>" + chatbox.innerHTML};
-        Collab.speech = function (o, d) {chatbox.innerHTML = "<p class='speech'>" + o + ": " + d + "</p>" + chatbox.innerHTML};
+        Collab.oninform = function (d) {chatbox.innerHTML    = "<p class='inform'>" + d + "</p>" + chatbox.innerHTML};
+        Collab.onspeech = function (o, d) {chatbox.innerHTML = "<p class='speech'> <span class='origin'>" + o + "</span>: " + d + "</p>" + chatbox.innerHTML};
+        Collab.ondata = function (o, d) {editor.value = d};
 
         Collab.load();
       }
