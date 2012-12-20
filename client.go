@@ -40,8 +40,8 @@ func WebsocketHandler(ws *websocket.Conn) {
 		return
 	}
 
-	client.Name = q.Origin
-	client.Key = q.Data
+	client.Name = client.Socket.RemoteAddr();
+	client.Key 	= q.Data
 
 	Router.Add <- client
 

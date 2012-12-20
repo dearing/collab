@@ -163,8 +163,8 @@ function changeMode() {
 }
 function generateKey() {
     var b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var key = "DOC:";
-    for(var i = 0; i < 25; i++) {
+    var key = "";
+    for(var i = 0; i < 10; i++) {
         key += b.charAt(Math.floor(Math.random() * b.length - 1));
     }
     return key;

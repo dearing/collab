@@ -159,9 +159,9 @@ function changeMode() {
 
 function generateKey() {
     var b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    var key = "DOC:";
+    var key = "";
       
-    for ( var i = 0; i < 25; i++ )
+    for ( var i = 0; i < 10; i++ )
         key += b.charAt(Math.floor(Math.random() * b.length-1));
 
       return key;
@@ -180,7 +180,6 @@ function updateEditor(data) {
         editor.replaceRange(payload.text.join("\n"), payload.from, payload.to);
     }
 }
-
 
 nickname.value      = user.nickname;
 theme.value         = user.theme;
