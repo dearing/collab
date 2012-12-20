@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>collab demo</title>
+<style>
+
+html, body {
+  height:     100%;
+  width:      100%;
+  min-height: 100%;
+  margin:     0;
+}
+
+#menu {
+  padding:1em;
+}
+
+#editor-box {
+  height: 60%;
+  border-bottom: 1px solid #999999;
+}
+
+#editor {
+  width:  100%;
+  height: 100%;
+  border: 2px:solid gray;
+}
+
+#inputbox 
+{
+  padding: 1em;
+}
+
+#input {
+  width: 80%;
+}
+
+#chatbox {
+  height:           25%;
+  padding:          1em;
+  overflow:         auto;
+  background-color: black;
+  color:            white;
+}
+
+#chatbox .inform  {
+  color: #669900;
+}
+
+#chatbox .speech .origin  {
+  color: #0099cc;
+}
+
+</style>
+  </head>
+  <body>
+        <div id='menu'>nickname: <input id='nickname'></input></div>
+        <div id='editor-box'><textarea id='editor'></textarea></div>
+        <div id='inputbox'><span style='color:#999'>chat: </span><input id='input'></input></div>
+        <div id='chatbox'></div>
+
+    <script src="collab.js"></script>
+    <script>
+    var input     = document.getElementById("input");
+    var chatbox   = document.getElementById("chatbox");
+    var editor    = document.getElementById("editor");
+
+      console.log(Collab)
+
+      if(Collab.compatible()) {
+        
+        Collab.connect("ws://localhost:8080/collab");
+
+         input.onkeypress = function (e) {if(e.keyCode == 13) {Collab.sendMessage(input.value)}}
+        editor.onkeypress = function (e) {Collab.updateEditor(editor.value)}
+
+        Collab.inform = function (o, d) {chatbox.innerHTML = "<p class='inform'>" + o + ": " + d + "</p>" + chatbox.innerHTML};
+        Collab.speech = function (o, d) {chatbox.innerHTML = "<p class='speech'>" + o + ": " + d + "</p>" + chatbox.innerHTML};
+
+        Collab.load();
+      }
+
+    </script>
+  </body>
+</html>

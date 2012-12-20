@@ -32,6 +32,7 @@ func (client *Client) mesg(action, data, origin string) *Message {
 // on a goroutine we do not need to fret about blocking.
 func WebsocketHandler(ws *websocket.Conn) {
 
+	Println("new connection...")
 	client := &Client{ID: <-Router.GetID, Socket: ws}
 
 	// we need a document key before we add this client
@@ -40,8 +41,8 @@ func WebsocketHandler(ws *websocket.Conn) {
 		return
 	}
 
-	client.Name = client.Socket.RemoteAddr();
-	client.Key 	= q.Data
+	client.Name = q.Origin
+	client.Key = q.Data
 
 	Router.Add <- client
 
