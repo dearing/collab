@@ -8,11 +8,9 @@
 A live code collaboration tool is handy to have around, more so when you find yourself posting code snippets...
 
 - In order to use this effectively, you will need to run the binary on a visible network.
-- For convenience, a built in webserver can handle the support files (SSL support off by default).
+- For convenience, a built in webserver can handle the support files
 - This is not hardened software, do not expect support outside of development.
 - Requires friends to use.
-- Supports privately shared sessions with hashtags `http://myhost/#secret_poetry` for example.
-- Visit the [download](https://github.com/dearing/collab/downloads) section for pre-built solutions {mac|linux|win}*{arm|amd64|x86}
 
 ## how to build ##
 - [install go](http://golang.org/doc/install)
@@ -23,15 +21,11 @@ A live code collaboration tool is handy to have around, more so when you find yo
 ```
 git clone https://github.com/dearing/collab.git
 cd collab
-go get code.google.com/p/go.net/websocket
+go get
 go build
 
-./collab --help
-Usage of collab:
-  -cert="": tls certificate
-  -host=":8080": host to bind to
-  -key="": tls certificate key
-  -root="www/": webserver document root folder
-  -tls=false: enable TLS
-  -www=true: enable local webserver
+Usage of collab.exe:
+  -conf="collab.conf": JSON configuration
+  -gen=false: generate default config
+
 ```

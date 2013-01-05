@@ -1,0 +1,14 @@
+[Unit]
+Description=websocket webchat
+After=syslog.target network.target
+
+[Service]
+User=myuser
+Group=mygroup
+Type=simple
+ExecStart=/home/myuser/wwwroot/webchat/webchat
+WorkingDirectory=/home/myuser/wwwroot/webchat
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
